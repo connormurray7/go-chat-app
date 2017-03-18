@@ -1,2 +1,2 @@
-# go-chat-app
-Learning Golang by building a chat app
+# Go chat
+Learning Golang by building a chat app 
