@@ -8,6 +8,18 @@ import (
 	"github.com/gorilla/websocket"
 )
 
+type Server struct {
+	clients   map[*websocket.Conn]bool
+	broadcast chan message.Message
+}
+
+func NewServer() *Server {
+	var s Server
+	s.clients = make(map[*websocket.Conn]bool)
+	s.broadcast = make(chan message.Message)
+	return &s
+}
+
 var upgrader = websocket.Upgrader{
 	CheckOrigin: func(r *http.Request) bool {
 		return true
@@ -48,7 +60,7 @@ func handleMessages() {
 	}
 }
 
-func run(clients map[*websocket.Conn]bool, broadcast chan message.Message) {
+func run(server Server) {
 	fs := http.FileServer(http.Dir("../public"))
 	http.Handle("/", fs)
 

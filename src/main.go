@@ -3,7 +3,6 @@ package main
 import (
 	"net/http"
 
-	"./message"
 	"./server"
 	"github.com/gorilla/websocket"
 )
@@ -15,8 +14,6 @@ var upgrader = websocket.Upgrader{
 }
 
 func main() {
-	var clients = make(map[*websocket.Conn]bool)
-	var broadcast = make(chan message.Message)
-
-	server.run(clients, broadcast)
+	s := server.NewServer()
+	server.run(s)
 }
