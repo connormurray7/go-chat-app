@@ -26,47 +26,47 @@ var upgrader = websocket.Upgrader{
 	},
 }
 
-func handleConnections(w http.ResponseWriter, r *http.Request) {
+func (server Server) handleConnections(w http.ResponseWriter, r *http.Request) {
 	ws, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer ws.Close()
-	clients[ws] = true
+	server.clients[ws] = true
 
 	for {
 		var message message.Message
 		err := ws.ReadJSON(&message)
 		if err != nil {
 			log.Println("error: ", err)
-			delete(clients, ws)
+			delete(server.clients, ws)
 			break
 		}
-		broadcast <- message
+		server.broadcast <- message
 	}
 }
 
-func handleMessages() {
+func (server Server) handleMessages() {
 	for {
-		message := <-broadcast
-		for client := range clients {
+		message := <-server.broadcast
+		for client := range server.clients {
 			err := client.WriteJSON(message)
 			if err != nil {
 				log.Println("error: ", err)
 				client.Close()
-				delete(clients, client)
+				delete(server.clients, client)
 			}
 		}
 	}
 }
 
-func run(server Server) {
+func (server Server) Run() {
 	fs := http.FileServer(http.Dir("../public"))
 	http.Handle("/", fs)
 
-	http.HandleFunc("/ws", handleConnections)
+	http.HandleFunc("/ws", server.handleConnections)
 
-	go handleMessages()
+	go server.handleMessages()
 
 	log.Println("Server started on :8000")
 	err := http.ListenAndServe(":8000", nil)
