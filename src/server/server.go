@@ -8,11 +8,13 @@ import (
 	"github.com/gorilla/websocket"
 )
 
+//Server holds clients andthe broadcast channel
 type Server struct {
 	clients   map[*websocket.Conn]bool
 	broadcast chan message.Message
 }
 
+//NewServer creates a new server.
 func NewServer() *Server {
 	var s Server
 	s.clients = make(map[*websocket.Conn]bool)
@@ -26,7 +28,7 @@ var upgrader = websocket.Upgrader{
 	},
 }
 
-func (server Server) handleConnections(w http.ResponseWriter, r *http.Request) {
+func (server *Server) handleConnections(w http.ResponseWriter, r *http.Request) {
 	ws, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		log.Fatal(err)
@@ -46,7 +48,7 @@ func (server Server) handleConnections(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (server Server) handleMessages() {
+func (server *Server) handleMessages() {
 	for {
 		message := <-server.broadcast
 		for client := range server.clients {
@@ -60,7 +62,8 @@ func (server Server) handleMessages() {
 	}
 }
 
-func (server Server) Run() {
+//Runs the server
+func (server *Server) Run() {
 	fs := http.FileServer(http.Dir("../public"))
 	http.Handle("/", fs)
 
