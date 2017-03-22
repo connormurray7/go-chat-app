@@ -29,6 +29,7 @@ var upgrader = websocket.Upgrader{
 }
 
 func (server *Server) handleConnections(w http.ResponseWriter, r *http.Request) {
+	log.Println("Received something")
 	ws, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		log.Fatal(err)
@@ -39,6 +40,7 @@ func (server *Server) handleConnections(w http.ResponseWriter, r *http.Request) 
 	for {
 		var message message.Message
 		err := ws.ReadJSON(&message)
+		log.Println("This is a message:", message)
 		if err != nil {
 			log.Println("error: ", err)
 			delete(server.clients, ws)
@@ -51,6 +53,7 @@ func (server *Server) handleConnections(w http.ResponseWriter, r *http.Request) 
 func (server *Server) handleMessages() {
 	for {
 		message := <-server.broadcast
+		log.Println("Got a message:", message)
 		for client := range server.clients {
 			err := client.WriteJSON(message)
 			if err != nil {
@@ -62,7 +65,7 @@ func (server *Server) handleMessages() {
 	}
 }
 
-//Runs the server
+//Run starts the server
 func (server *Server) Run() {
 	fs := http.FileServer(http.Dir("../public"))
 	http.Handle("/", fs)
