@@ -1,3 +1,5 @@
+//Thanks to the author of https://scotch.io/bar-talk/build-a-realtime-chat-server-with-go-and-websockets
+//for a nice template to build off of.
 package main
 
 import (
@@ -10,7 +12,7 @@ import (
 //Server holds clients and the broadcast channel
 type Server struct {
 	clients   map[*websocket.Conn]bool
-	broadcast chan Message
+	messageCh chan Message
 }
 
 //Message contains the information for each message
@@ -23,21 +25,24 @@ type Message struct {
 func newServer() *Server {
 	var s Server
 	s.clients = make(map[*websocket.Conn]bool)
-	s.broadcast = make(chan Message)
+	s.messageCh = make(chan Message)
 	return &s
 }
 
 func (server *Server) handleMessages() {
 	for {
-		message := <-server.broadcast
-		log.Println("Got a message:", message)
-		for client := range server.clients {
-			err := client.WriteJSON(message)
-			if err != nil {
-				log.Println("error: ", err)
-				client.Close()
-				delete(server.clients, client)
-			}
+		message := <-server.messageCh
+		server.broadcastMessage(message)
+	}
+}
+
+func (server *Server) broadcastMessage(message Message) {
+	for client := range server.clients {
+		err := client.WriteJSON(message)
+		if err != nil {
+			log.Println("error: ", err)
+			client.Close()
+			delete(server.clients, client)
 		}
 	}
 }
@@ -53,13 +58,12 @@ func (server *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	for {
 		var message Message
 		err := ws.ReadJSON(&message)
-		log.Println("This is a message:", message)
 		if err != nil {
 			log.Println("error: ", err)
 			delete(server.clients, ws)
 			break
 		}
-		server.broadcast <- message
+		server.messageCh <- message
 	}
 }
 
