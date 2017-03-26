@@ -1,2 +1,0 @@
-# Go chat
-Thanks again to [this example](https://scotch.io/bar-talk/build-a-realtime-chat-server-with-go-and-websockets) that provided the initial Go code and Javascript. I modified the css and js to be a bit simpler.
