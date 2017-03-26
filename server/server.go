@@ -17,8 +17,8 @@ type Server struct {
 
 //Message contains the information for each message
 type Message struct {
-	Username string `json:"username"`
-	Message  string `json:"message"`
+	Name    string `json:"name"`
+	Message string `json:"message"`
 }
 
 func newServer() *Server {
@@ -68,10 +68,7 @@ func (server *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 //Run starts the server
 func (server *Server) Run() {
-	fs := http.FileServer(http.Dir("../public"))
-	http.Handle("/", fs)
-
-	http.Handle("/ws", server)
+	http.Handle("/", server)
 
 	go server.handleMessages()
 
@@ -84,9 +81,8 @@ func (server *Server) Run() {
 
 // Configure the upgrader
 var upgrader = websocket.Upgrader{
-	CheckOrigin: func(r *http.Request) bool {
-		return true
-	},
+	ReadBufferSize:  4096,
+	WriteBufferSize: 4096,
 }
 
 func main() {
