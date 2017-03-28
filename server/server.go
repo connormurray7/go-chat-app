@@ -46,6 +46,9 @@ func (server *Server) broadcastMessage(message Message) {
 	}
 }
 
+// Configure the upgrader
+var upgrader = websocket.Upgrader{}
+
 func (server *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ws, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
@@ -77,12 +80,6 @@ func (server *Server) Run() {
 	if err != nil {
 		log.Fatal("ListenAndServe: ", err)
 	}
-}
-
-// Configure the upgrader
-var upgrader = websocket.Upgrader{
-	ReadBufferSize:  4096,
-	WriteBufferSize: 4096,
 }
 
 func main() {
