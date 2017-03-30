@@ -22,7 +22,7 @@ var upgrader = websocket.Upgrader{
 
 func main() {
 	var dialer *websocket.Dialer
-	conn, _, err := dialer.Dial("127.0.0.1:8000", nil)
+	conn, _, err := dialer.Dial("ws://localhost:8081", nil)
 
 	if err != nil {
 		fmt.Println("Error connecting to server", err)

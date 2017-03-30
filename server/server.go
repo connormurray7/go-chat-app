@@ -50,6 +50,7 @@ func (server *Server) broadcastMessage(message Message) {
 var upgrader = websocket.Upgrader{}
 
 func (server *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	log.Println("Got here....")
 	ws, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		log.Fatal(err)
@@ -71,7 +72,9 @@ func (server *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 //Run starts the server
 func (server *Server) Run() {
-	http.Handle("/", server)
+	fs := http.FileServer(http.Dir("../public"))
+	http.Handle("/", fs)
+	http.Handle("/ws", server)
 
 	go server.handleMessages()
 
