@@ -6,6 +6,8 @@ import (
 	"log"
 	"os"
 
+	"strings"
+
 	"github.com/gorilla/websocket"
 )
 
@@ -22,6 +24,7 @@ var upgrader = websocket.Upgrader{
 
 func main() {
 	var dialer *websocket.Dialer
+	address := getAddress()
 	conn, _, err := dialer.Dial(address, nil)
 
 	if err != nil {
@@ -33,13 +36,20 @@ func main() {
 	waitForMessages(conn)
 }
 
-func getAddress() {
-	const address string = "ws://localhost:8000"
+func getAddress() string {
+	const defaultAddr string = "ws://localhost:8000"
 	fmt.Print("Address:")
 	scanner := bufio.NewScanner(os.Stdin)
 	scanner.Scan()
 	text := scanner.Text()
-	fmt.Println("This was the address given", text)
+	if text == "" {
+		return defaultAddr
+	} else if strings.HasPrefix(text, "ws://") {
+		return text
+	} else if strings.HasPrefix(text, "http://") {
+		text = text[6:]
+	}
+	return "ws://" + text
 }
 
 func writeMessages(conn *websocket.Conn) {
