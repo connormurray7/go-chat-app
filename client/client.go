@@ -22,14 +22,24 @@ var upgrader = websocket.Upgrader{
 
 func main() {
 	var dialer *websocket.Dialer
-	conn, _, err := dialer.Dial("ws://localhost:8081", nil)
+	conn, _, err := dialer.Dial(address, nil)
 
 	if err != nil {
 		fmt.Println("Error connecting to server", err)
 		return
 	}
+	fmt.Println("You are connected to")
 	go writeMessages(conn)
 	waitForMessages(conn)
+}
+
+func getAddress() {
+	const address string = "ws://localhost:8000"
+	fmt.Print("Address:")
+	scanner := bufio.NewScanner(os.Stdin)
+	scanner.Scan()
+	text := scanner.Text()
+	fmt.Println("This was the address given", text)
 }
 
 func writeMessages(conn *websocket.Conn) {
@@ -38,7 +48,6 @@ func writeMessages(conn *websocket.Conn) {
 		text := scanner.Text()
 		m := Message{Name: "me", Message: text}
 		conn.WriteJSON(m)
-		fmt.Println("me -> ", text)
 	}
 }
 
