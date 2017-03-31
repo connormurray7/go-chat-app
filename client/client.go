@@ -44,6 +44,7 @@ func getAddress() string {
 	scanner.Scan()
 	text := scanner.Text()
 	if text == "" {
+		fmt.Println("Defaulting to", defaultAddr)
 		return defaultAddr
 	} else if strings.HasPrefix(text, "ws://") {
 		return text

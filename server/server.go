@@ -72,9 +72,7 @@ func (server *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 //Run starts the server
 func (server *Server) Run() {
-	fs := http.FileServer(http.Dir("../public"))
-	http.Handle("/", fs)
-	http.Handle("/ws", server)
+	http.Handle("/", server)
 
 	go server.handleMessages()
 
