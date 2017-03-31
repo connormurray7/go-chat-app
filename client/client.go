@@ -31,8 +31,9 @@ func main() {
 		fmt.Println("Error connecting to server", err)
 		return
 	}
-	fmt.Println("You are connected to")
-	go writeMessages(conn)
+	fmt.Println("You are connected to address", address)
+	name := getName()
+	go writeMessages(conn, name)
 	waitForMessages(conn)
 }
 
@@ -52,11 +53,19 @@ func getAddress() string {
 	return "ws://" + text
 }
 
-func writeMessages(conn *websocket.Conn) {
+func getName() string {
+	fmt.Print("Name:")
+	scanner := bufio.NewScanner(os.Stdin)
+	scanner.Scan()
+	name := scanner.Text()
+	return name
+}
+
+func writeMessages(conn *websocket.Conn, name string) {
 	scanner := bufio.NewScanner(os.Stdin)
 	for scanner.Scan() {
 		text := scanner.Text()
-		m := Message{Name: "me", Message: text}
+		m := Message{Name: name, Message: text}
 		conn.WriteJSON(m)
 	}
 }
