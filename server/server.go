@@ -46,11 +46,8 @@ func (server *Server) broadcastMessage(message Message) {
 	}
 }
 
-// Configure the upgrader
-var upgrader = websocket.Upgrader{}
-
 func (server *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	log.Println("Got here....")
+	upgrader := websocket.Upgrader{}
 	ws, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		log.Fatal(err)
