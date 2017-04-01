@@ -39,12 +39,12 @@ func main() {
 
 func getAddress() string {
 	const defaultAddr string = "ws://localhost:8000"
+	fmt.Printf("Hit return for default -> %s\n", defaultAddr)
 	fmt.Print("Address:")
 	scanner := bufio.NewScanner(os.Stdin)
 	scanner.Scan()
 	text := scanner.Text()
 	if text == "" {
-		fmt.Println("Defaulting to", defaultAddr)
 		return defaultAddr
 	} else if strings.HasPrefix(text, "ws://") {
 		return text
@@ -59,6 +59,7 @@ func getName() string {
 	scanner := bufio.NewScanner(os.Stdin)
 	scanner.Scan()
 	name := scanner.Text()
+	fmt.Printf("Logged in as %s\n-------------------------\n", name)
 	return name
 }
 
