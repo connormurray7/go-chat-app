@@ -3,10 +3,8 @@
 package main
 
 import (
-	"bufio"
 	"log"
 	"net/http"
-	"os"
 
 	"github.com/gorilla/websocket"
 )
@@ -25,7 +23,7 @@ type Message struct {
 
 func main() {
 	var server = newServer()
-	port := getPort()
+	const port string = "8000" //Can swap out for config file or user input.
 	server.Run(port)
 }
 
@@ -36,24 +34,12 @@ func newServer() *Server {
 	return &s
 }
 
-func getPort() string {
-	const defaultPort string = "8000"
-	log.Printf("Default %s\nPort:", defaultPort)
-	scanner := bufio.NewScanner(os.Stdin)
-	scanner.Scan()
-	port := scanner.Text()
-	if port == "" {
-		return defaultPort
-	}
-	return port
-}
-
 //Run starts the server
 func (server *Server) Run(port string) {
 	http.Handle("/", server)
 	go server.handleMessages()
 
-	log.Println("Starting server on", port)
+	log.Println("Starting server on port", port)
 	err := http.ListenAndServe(":"+port, nil)
 	if err != nil {
 		log.Fatal("ListenAndServe: ", err)
@@ -86,6 +72,7 @@ func (server *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 	defer ws.Close()
 	server.clients[ws] = true
+	log.Println("New user connected from:", r.RemoteAddr)
 
 	for {
 		var message Message
