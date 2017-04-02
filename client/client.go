@@ -34,7 +34,7 @@ func main() {
 	fmt.Println("You are connected to address", address)
 	name := getName()
 	go writeMessages(conn, name)
-	waitForMessages(conn)
+	waitForMessages(conn, name)
 }
 
 func getAddress() string {
@@ -72,7 +72,7 @@ func writeMessages(conn *websocket.Conn, name string) {
 	}
 }
 
-func waitForMessages(conn *websocket.Conn) {
+func waitForMessages(conn *websocket.Conn, name string) {
 	for {
 		var m Message
 		err := conn.ReadJSON(&m)
@@ -80,6 +80,8 @@ func waitForMessages(conn *websocket.Conn) {
 			log.Println(err)
 			break
 		}
-		fmt.Println(m.Name, "->", m.Message)
+		if m.Name != name {
+			fmt.Println(m.Name, "->", m.Message)
+		}
 	}
 }
