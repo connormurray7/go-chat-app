@@ -3,7 +3,6 @@ package main
 import (
 	"bufio"
 	"fmt"
-	"log"
 	"os"
 
 	"strings"
@@ -77,7 +76,7 @@ func waitForMessages(conn *websocket.Conn, name string) {
 		var m Message
 		err := conn.ReadJSON(&m)
 		if err != nil {
-			log.Println(err)
+			fmt.Println(err)
 			break
 		}
 		if m.Name != name {

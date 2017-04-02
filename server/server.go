@@ -4,7 +4,6 @@ package main
 
 import (
 	"bufio"
-	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -39,7 +38,7 @@ func newServer() *Server {
 
 func getPort() string {
 	const defaultPort string = "8000"
-	fmt.Printf("Default %s\nPort:", defaultPort)
+	log.Printf("Default %s\nPort:", defaultPort)
 	scanner := bufio.NewScanner(os.Stdin)
 	scanner.Scan()
 	port := scanner.Text()
@@ -72,7 +71,7 @@ func (server *Server) broadcastMessage(message Message) {
 	for client := range server.clients {
 		err := client.WriteJSON(message)
 		if err != nil {
-			log.Println("error: ", err)
+			log.Println("error:", err)
 			client.Close()
 			delete(server.clients, client)
 		}
@@ -92,7 +91,7 @@ func (server *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		var message Message
 		err := ws.ReadJSON(&message)
 		if err != nil {
-			log.Println("error: ", err)
+			log.Println("error:", err)
 			delete(server.clients, ws)
 			break
 		}
