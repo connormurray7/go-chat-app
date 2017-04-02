@@ -3,8 +3,11 @@
 package main
 
 import (
+	"bufio"
+	"fmt"
 	"log"
 	"net/http"
+	"os"
 
 	"github.com/gorilla/websocket"
 )
@@ -21,11 +24,41 @@ type Message struct {
 	Message string `json:"message"`
 }
 
+func main() {
+	var server = newServer()
+	port := getPort()
+	server.Run(port)
+}
+
 func newServer() *Server {
 	var s Server
 	s.clients = make(map[*websocket.Conn]bool)
 	s.messageCh = make(chan Message)
 	return &s
+}
+
+func getPort() string {
+	const defaultPort string = "8000"
+	fmt.Printf("Default %s\nPort:", defaultPort)
+	scanner := bufio.NewScanner(os.Stdin)
+	scanner.Scan()
+	port := scanner.Text()
+	if port == "" {
+		return defaultPort
+	}
+	return port
+}
+
+//Run starts the server
+func (server *Server) Run(port string) {
+	http.Handle("/", server)
+	go server.handleMessages()
+
+	log.Println("Starting server on", port)
+	err := http.ListenAndServe(":"+port, nil)
+	if err != nil {
+		log.Fatal("ListenAndServe: ", err)
+	}
 }
 
 func (server *Server) handleMessages() {
@@ -65,22 +98,4 @@ func (server *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		}
 		server.messageCh <- message
 	}
-}
-
-//Run starts the server
-func (server *Server) Run() {
-	http.Handle("/", server)
-
-	go server.handleMessages()
-
-	log.Println("Server started on :8000")
-	err := http.ListenAndServe(":8000", nil)
-	if err != nil {
-		log.Fatal("ListenAndServe: ", err)
-	}
-}
-
-func main() {
-	var server = newServer()
-	server.Run()
 }
