@@ -9,6 +9,6 @@ Go chat is a simple chat program that can be run from the terminal. It uses webs
 The server defaults to serving `localhost:8000`. The server logs when a new user is connected and from what remote address.
 ![Alt text](example/server.png?raw=true "Optional Title")
 ### Clients
-Clients default to`localhost:8000` for connecting to the server. Every client that is connected to the server will receive messages. Currently there is only one feed. 
+Clients default to`localhost:8000` for connecting to the server. Every client that is connected to the server will receive messages. Currently all clients will be broadcasted messages, but in the future I may the options for different feeds.. 
 ![Alt text](example/connor.png?raw=true "Optional Title")
 ![Alt text](example/other.png?raw=true "Optional Title") 
