@@ -4,6 +4,17 @@ Go chat is a simple chat program that can be run from the terminal. It uses webs
 # Install
 	go get github.com/connormurray7/go-chat-app
 
+# Run
+    go run server/server.go
+    go run client/client.go # Another session
+
+# Run using docker
+Within the directory run,
+
+    docker build .
+    docker run <image>
+    go run client/client.go # Another session
+
 # Example
 ### Server
 The server defaults to serving `localhost:8000`. The server logs when a new user is connected and from what remote address.
